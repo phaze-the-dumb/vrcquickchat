@@ -21,7 +21,7 @@ http.createServer((req, res) => {
         client = new Client(req.headers.ip, 9000);
         res.end('ok');
     }
-}).listen(7070);
+}).listen(7070, '0.0.0.0');
 
 let ipconfig = spawn('ipconfig'); // does vrc even run on linux?
 

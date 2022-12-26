@@ -13,4 +13,5 @@ Allows you to use a phone, laptop or tablet as a keyboard for the VRChat chat bo
 ## Running on a mobile device
 1) Follow the steps above
 2) Open a web browser on your phone
-3) Enter the same url on your phone that is open on your pc
+3) Open control panel and go to System and Security > Windows Defender Firewall > Allowed Apps find both node runtimes and enable both private and public network access (this is a bit tricky if you need help message `Phaze#6193` on discord)
+4) Enter the same url on your phone that is open on your pc

@@ -1,0 +1,164 @@
+<html>
+    <head>
+        <title>VRCQuickChat Dashboard</title>
+    </head>
+    <body>
+        <div class="chatbox">e</div><br />
+
+        <input class="input" id="chatinpt">
+        <div style="display: flex;">
+            <div class="displayButton" onclick="send();">Send</div>
+            <div class="displayButton" onclick="clr();">Clear</div>
+        </div>
+        <div class="ip">To open this on another device, open a web browser and navigate to: Cannot Find IP Address</div>
+
+        <h3 style="text-align: center;">History</h3>
+        <div class="history"></div>
+
+        <h3 style="text-align: center;">VRChat IP</h3><p style="text-align: center;">If you are on pc leave it as 127.0.0.1 or localhost, if you are on quest open wifi settings > click on your wifi network > advanced > IP address (enter this in the box below)</p>
+        <input class="input" id="qipinpt" value="127.0.0.1"> <span id="ipstatus"></span>
+
+        <style>
+            body{
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: black;
+                color: white;
+            }
+
+            .chatbox{
+                padding: 10px;
+                transition: 0.5s;
+                opacity: 0;
+                background: gray;
+                border-radius: 5px;
+                text-align: center;
+            }
+
+            .lastMessage{
+                padding: 10px;
+                background: gray;
+                border-radius: 5px;
+                text-align: center;
+                margin: 10px;
+                cursor: pointer;
+                user-select: none;
+            }
+
+            .input{
+                border: black 2px solid;
+                outline: none;
+                width: 100%;
+                font-size: 15px;
+                border-radius: 5px;
+                padding: 10px;
+            }
+
+            .displayButton{
+                background: rgb(0, 204, 255);
+                width: 50%;
+                font-size: 15px;
+                border-radius: 5px;
+                padding: 10px;
+                margin: 10px;
+                text-align: center;
+                cursor: pointer;
+                user-select: none;
+            }
+
+            .ip{
+                text-align: center;
+            }
+
+            .history{
+                height: 50%;
+                overflow-y: auto;
+            }
+        </style>
+
+        <script>
+            let chatbox = document.querySelector('.chatbox');
+            let input = document.querySelector('#chatinpt');
+            let timeout;
+            let his = [];
+            let isHis = false;
+
+            fetch('/internalip').then(data => data.text()).then(data => {
+                document.querySelector('.ip').innerHTML = 'To open this on another device, open a web browser and navigate to: <a href="http://'+data+':7070">http://'+data+':7070<a><br />Don\'t worry this is an internal ip no one from outside your network can access it.';
+            })
+
+            document.querySelector('#qipinpt').onchange = () => {
+                document.querySelector('#ipstatus').innerHTML = 'Updating IP';
+
+                fetch('/changeip', { headers: { ip: document.querySelector('#qipinpt').value } }).then(data => data.text()).then(data => {
+                    setTimeout(() => 
+                        document.querySelector('#ipstatus').innerHTML = 'IP Updated', 100);
+                })
+            }
+
+            let clr = () => {
+                fetch('/chatbox.json', { headers: { text: '' } }).then(data => data.json()).then(d => {
+                    if(timeout)
+                        window.clearTimeout(timeout);
+
+                    chatbox.style.opacity = 0;
+                }).catch(e => {
+                    chatbox.innerHTML = 'Something fucked itself... '+e;
+                    chatbox.style.opacity = 1;
+
+                    if(timeout)
+                        window.clearTimeout(timeout);
+
+                    timeout = setTimeout(() => {
+                        chatbox.style.opacity = 0;
+                    }, 10000)
+                })
+            }
+
+            let send = () => {
+                fetch('/chatbox.json', { headers: { text: input.value } }).then(data => data.json()).then(d => {
+                    chatbox.innerHTML = input.value;
+                    chatbox.style.opacity = 1;
+
+                    if(!isHis){
+                        his.splice(0, 0, input.value);
+                        document.querySelector('.history').innerHTML = '';
+
+                        his.forEach(his => {
+                            let lastMessage = document.createElement('div');
+                            lastMessage.className = 'lastMessage';
+                            lastMessage.innerHTML = his;
+                            lastMessage.onclick = () => {
+                                input.value = his;
+                                isHis = true;
+
+                                send();
+                            }
+
+                            document.querySelector('.history').appendChild(lastMessage);
+                        });
+                    }
+                    
+                    isHis = false;
+                    input.value = '';
+
+                    if(timeout)
+                        window.clearTimeout(timeout);
+
+                    timeout = setTimeout(() => {
+                        chatbox.style.opacity = 0;
+                    }, 10000)
+                }).catch(e => {
+                    chatbox.innerHTML = 'Something fucked itself... '+e;
+                    chatbox.style.opacity = 1;
+
+                    if(timeout)
+                        window.clearTimeout(timeout);
+
+                    timeout = setTimeout(() => {
+                        chatbox.style.opacity = 0;
+                    }, 10000)
+                })
+            }
+        </script>
+    </body>
+</html>

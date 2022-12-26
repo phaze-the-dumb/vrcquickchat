@@ -7,7 +7,7 @@ Allows you to use a phone, laptop or tablet as a keyboard for the VRChat chat bo
 2) Download / Clone the repository (Code > Download ZIP button)
 3) Extract the compressed folder
 4) Run the install libs bat file `installlibs.bat` this installs the javascript npm libraries for the project
-4) Finally run the `run.bat` file this should launch a webpage in which you can send messages
+4) Finally run the `run.bat` file this should launch a webpage in which you can send messages (You can minimize the cmd window)
 5) IF YOU ARE ON QUEST MAKE SURE TO CHANGE THE VRCHAT IP AT THE BOTTOM OF THE PAGE
 
 ## Running on a mobile device
